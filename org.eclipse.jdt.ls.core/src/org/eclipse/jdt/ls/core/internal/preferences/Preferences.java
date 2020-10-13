@@ -60,7 +60,7 @@ public class Preferences {
 	 * Preference key used to include getter, setter and builder/constructor when
 	 * finding references.
 	 */
-	public static final String JAVA_REFERENCES_INCLUDE_GETTERSETTER = "java.references.includeGetterSetter";
+	public static final String JAVA_REFERENCES_INCLUDE_ACCESSORS = "java.references.includeAccessors";
 	/**
 	 * Specifies Java Execution Environments.
 	 */
@@ -422,7 +422,7 @@ public class Preferences {
 	private boolean generateToStringListArrayContents;
 	private int generateToStringLimitElements;
 	private List<String> preferredContentProviderIds;
-	private boolean includeGetterSetter;
+	private boolean includeAccessors;
 
 	private String mavenUserSettings;
 
@@ -613,7 +613,7 @@ public class Preferences {
 		staticImportOnDemandThreshold = IMPORTS_STATIC_ONDEMANDTHRESHOLD_DEFAULT;
 		referencedLibraries = JAVA_PROJECT_REFERENCED_LIBRARIES_DEFAULT;
 		resourceFilters = JAVA_RESOURCE_FILTERS_DEFAULT;
-		includeGetterSetter = false;
+		includeAccessors = true;
 	}
 
 	/**
@@ -853,8 +853,8 @@ public class Preferences {
 		prefs.setFileHeaderTemplate(fileHeader);
 		List<String> typeComment = getList(configuration, JAVA_TEMPLATES_TYPECOMMENT);
 		prefs.setTypeCommentTemplate(typeComment);
-		boolean includeGetterSetter = getBoolean(configuration, JAVA_REFERENCES_INCLUDE_GETTERSETTER, false);
-		prefs.setIncludeGetterSetter(includeGetterSetter);
+		boolean includeAccessors = getBoolean(configuration, JAVA_REFERENCES_INCLUDE_ACCESSORS, true);
+		prefs.setIncludeAccessors(includeAccessors);
 		return prefs;
 	}
 
@@ -1424,12 +1424,12 @@ public class Preferences {
 		return this;
 	}
 
-	public Preferences setIncludeGetterSetter(boolean includeGetterSetter) {
-		this.includeGetterSetter = includeGetterSetter;
+	public Preferences setIncludeAccessors(boolean includeAccessors) {
+		this.includeAccessors = includeAccessors;
 		return this;
 	}
 
-	public boolean isIncludeGetterSetter() {
-		return this.includeGetterSetter;
+	public boolean isIncludeAccessors() {
+		return this.includeAccessors;
 	}
 }
