@@ -19,6 +19,7 @@ import static org.eclipse.jdt.ls.core.internal.handlers.MapFlattener.getString;
 import static org.eclipse.jdt.ls.core.internal.handlers.MapFlattener.getValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,6 +58,11 @@ public class Preferences {
 	 */
 	public static final String JAVA_HOME = "java.home";
 	/**
+	 * Preference key used to include getter, setter and builder/constructor when
+	 * finding references.
+	 */
+	public static final String JAVA_REFERENCES_INCLUDE_ACCESSORS = "java.references.includeAccessors";
+	/**
 	 * Specifies Java Execution Environments.
 	 */
 	public static final String JAVA_CONFIGURATION_RUNTIMES = "java.configuration.runtimes";
@@ -73,6 +79,14 @@ public class Preferences {
 	 * Preference key used to include the comments during the formatting.
 	 */
 	public static final String JAVA_FORMAT_COMMENTS = "java.format.comments.enabled";
+
+	/**
+	 * Specifies filter applied on projects to exclude some file system objects
+	 * while populating the resources tree.
+	 */
+	public static final String JAVA_RESOURCE_FILTERS = "java.project.resourceFilters";
+	public static final List<String> JAVA_RESOURCE_FILTERS_DEFAULT;
+
 	/**
 	 * Preference key to enable/disable gradle importer.
 	 */
@@ -324,6 +338,12 @@ public class Preferences {
 	// A named preference that defines whether to generate method comments when generating the methods.
 	public static final String JAVA_CODEGENERATION_GENERATECOMMENTS = "java.codeGeneration.generateComments";
 
+	// Specifies the type comment snippets for new Java type.
+	public static final String JAVA_TEMPLATES_TYPECOMMENT = "java.templates.typeComment";
+	
+	// Specifies the file header snippets for new Java file.
+	public static final String JAVA_TEMPLATES_FILEHEADER = "java.templates.fileHeader";
+
 	/**
 	 * The preferences for generating toString method.
 	 */
@@ -417,6 +437,7 @@ public class Preferences {
 	private boolean generateToStringListArrayContents;
 	private int generateToStringLimitElements;
 	private List<String> preferredContentProviderIds;
+	private boolean includeAccessors;
 
 	private String mavenUserSettings;
 
@@ -437,6 +458,10 @@ public class Preferences {
 	private int importOnDemandThreshold;
 	private int staticImportOnDemandThreshold;
 	private Set<RuntimeEnvironment> runtimes = new HashSet<>();
+	private List<String> resourceFilters;
+
+	private List<String> fileHeaderTemplate = new LinkedList<>();
+	private List<String> typeCommentTemplate = new LinkedList<>();
 
 	static {
 		JAVA_IMPORT_EXCLUSIONS_DEFAULT = new LinkedList<>();
@@ -463,6 +488,7 @@ public class Preferences {
 		JAVA_COMPLETION_FILTERED_TYPES_DEFAULT = new ArrayList<>();
 		JAVA_COMPLETION_FILTERED_TYPES_DEFAULT.add("java.awt.*");
 		JAVA_COMPLETION_FILTERED_TYPES_DEFAULT.add("com.sun.*");
+		JAVA_RESOURCE_FILTERS_DEFAULT = Arrays.asList("node_modules", ".git");
 	}
 
 	public static enum Severity {
@@ -606,6 +632,8 @@ public class Preferences {
 		importOnDemandThreshold = IMPORTS_ONDEMANDTHRESHOLD_DEFAULT;
 		staticImportOnDemandThreshold = IMPORTS_STATIC_ONDEMANDTHRESHOLD_DEFAULT;
 		referencedLibraries = JAVA_PROJECT_REFERENCED_LIBRARIES_DEFAULT;
+		resourceFilters = JAVA_RESOURCE_FILTERS_DEFAULT;
+		includeAccessors = true;
 	}
 
 	/**
@@ -840,6 +868,13 @@ public class Preferences {
 			}
 		}
 		prefs.setRuntimes(runtimes);
+
+		List<String> fileHeader = getList(configuration, JAVA_TEMPLATES_FILEHEADER);
+		prefs.setFileHeaderTemplate(fileHeader);
+		List<String> typeComment = getList(configuration, JAVA_TEMPLATES_TYPECOMMENT);
+		prefs.setTypeCommentTemplate(typeComment);
+		boolean includeAccessors = getBoolean(configuration, JAVA_REFERENCES_INCLUDE_ACCESSORS, true);
+		prefs.setIncludeAccessors(includeAccessors);
 		return prefs;
 	}
 
@@ -1391,4 +1426,30 @@ public class Preferences {
 		return this.gradleWrapperList == null ? Collections.emptyList() : this.gradleWrapperList;
 	}
 
+	public List<String> getFileHeaderTemplate() {
+		return fileHeaderTemplate;
+	}
+
+	public Preferences setFileHeaderTemplate(List<String> fileHeaderTemplate) {
+		this.fileHeaderTemplate = fileHeaderTemplate;
+		return this;
+	}
+
+	public List<String> getTypeCommentTemplate() {
+		return typeCommentTemplate;
+	}
+
+	public Preferences setTypeCommentTemplate(List<String> typeCommentTemplate) {
+		this.typeCommentTemplate = typeCommentTemplate;
+		return this;
+	}
+
+	public Preferences setIncludeAccessors(boolean includeAccessors) {
+		this.includeAccessors = includeAccessors;
+		return this;
+	}
+
+	public boolean isIncludeAccessors() {
+		return this.includeAccessors;
+	}
 }
